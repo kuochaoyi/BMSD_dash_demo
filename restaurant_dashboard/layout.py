@@ -2,7 +2,7 @@
 
 from dash import dcc, html
 
-from .components import metric_card
+from .components import app_dropdown, metric_card
 from .data import CITY_OPTIONS, CUISINE_OPTIONS, DATA_UPDATE_TIME, PLANNER_DEFAULT_CITY
 from .time_utils import format_update_time
 
@@ -66,11 +66,12 @@ def build_layout():
                             html.Div(
                                 [
                                     html.Label("縣市", htmlFor="city"),
-                                    dcc.Dropdown(
-                                        id="city",
+                                    app_dropdown(
+                                        "city",
                                         options=[{"label": city, "value": city} for city in CITY_OPTIONS],
                                         placeholder="全部縣市",
                                         clearable=True,
+                                        search_placeholder="搜尋縣市名稱...",
                                     ),
                                 ],
                                 className="field",
@@ -78,14 +79,15 @@ def build_layout():
                             html.Div(
                                 [
                                     html.Label("營業狀態", htmlFor="status"),
-                                    dcc.Dropdown(
-                                        id="status",
+                                    app_dropdown(
+                                        "status",
                                         options=[
                                             {"label": "營業中", "value": "營業中"},
                                             {"label": "非營業中", "value": "非營業中"},
                                         ],
                                         placeholder="全部狀態",
                                         clearable=True,
+                                        searchable=False,
                                     ),
                                 ],
                                 className="field",
@@ -195,14 +197,15 @@ def build_layout():
                                             html.Div(
                                                 [
                                                     html.Label("縣市", htmlFor="explorer-city"),
-                                                    dcc.Dropdown(
-                                                        id="explorer-city",
+                                                    app_dropdown(
+                                                        "explorer-city",
                                                         options=[
                                                             {"label": city, "value": city}
                                                             for city in CITY_OPTIONS
                                                         ],
                                                         placeholder="全部縣市",
                                                         clearable=True,
+                                                        search_placeholder="搜尋縣市名稱...",
                                                     ),
                                                 ],
                                                 className="field",
@@ -223,13 +226,14 @@ def build_layout():
                                             html.Div(
                                                 [
                                                     html.Label("菜色類型（可複選）", htmlFor="explorer-cuisines"),
-                                                    dcc.Dropdown(
-                                                        id="explorer-cuisines",
+                                                    app_dropdown(
+                                                        "explorer-cuisines",
                                                         options=CUISINE_OPTIONS,
                                                         value=[],
                                                         placeholder="全部類型",
                                                         multi=True,
                                                         clearable=True,
+                                                        search_placeholder="搜尋菜色類型...",
                                                     ),
                                                 ],
                                                 className="field",
@@ -237,14 +241,15 @@ def build_layout():
                                             html.Div(
                                                 [
                                                     html.Label("選擇店家", htmlFor="restaurant-picker"),
-                                                    dcc.Dropdown(
-                                                        id="restaurant-picker",
+                                                    app_dropdown(
+                                                        "restaurant-picker",
                                                         options=[],
                                                         value=None,
                                                         placeholder="請先使用搜尋條件",
                                                         clearable=False,
                                                         searchable=True,
                                                         disabled=True,
+                                                        search_placeholder="搜尋店名或地區...",
                                                     ),
                                                 ],
                                                 className="field",
@@ -353,8 +358,8 @@ def build_layout():
                                             html.Div(
                                                 [
                                                     html.Label("縣市", htmlFor="planner-city"),
-                                                    dcc.Dropdown(
-                                                        id="planner-city",
+                                                    app_dropdown(
+                                                        "planner-city",
                                                         options=[
                                                             {"label": city, "value": city}
                                                             for city in CITY_OPTIONS
@@ -362,6 +367,7 @@ def build_layout():
                                                         value=PLANNER_DEFAULT_CITY,
                                                         placeholder="請選擇縣市",
                                                         clearable=False,
+                                                        search_placeholder="搜尋縣市名稱...",
                                                     ),
                                                 ],
                                                 className="field",
@@ -369,13 +375,14 @@ def build_layout():
                                             html.Div(
                                                 [
                                                     html.Label("菜色類型（可複選）", htmlFor="planner-cuisines"),
-                                                    dcc.Dropdown(
-                                                        id="planner-cuisines",
+                                                    app_dropdown(
+                                                        "planner-cuisines",
                                                         options=CUISINE_OPTIONS,
                                                         value=[],
                                                         placeholder="全部類型",
                                                         multi=True,
                                                         clearable=True,
+                                                        search_placeholder="搜尋菜色類型...",
                                                     ),
                                                     html.P(
                                                         "選擇多種類型時，符合任一類型即可列入結果。",
@@ -447,14 +454,15 @@ def build_layout():
                                     html.Div(
                                         [
                                             html.Label("鎖定縣市（或點擊左側長條）", htmlFor="d3-city-filter"),
-                                            dcc.Dropdown(
-                                                id="d3-city-filter",
+                                            app_dropdown(
+                                                "d3-city-filter",
                                                 options=[
                                                     {"label": city, "value": city}
                                                     for city in CITY_OPTIONS
                                                 ],
                                                 placeholder="全部縣市",
                                                 clearable=True,
+                                                search_placeholder="搜尋縣市名稱...",
                                             ),
                                         ],
                                         className="field",
@@ -462,11 +470,12 @@ def build_layout():
                                     html.Div(
                                         [
                                             html.Label("鎖定菜色（或點擊右側圓餅）", htmlFor="d3-cuisine-filter"),
-                                            dcc.Dropdown(
-                                                id="d3-cuisine-filter",
+                                            app_dropdown(
+                                                "d3-cuisine-filter",
                                                 options=CUISINE_OPTIONS,
                                                 placeholder="全部菜色類型",
                                                 clearable=True,
+                                                search_placeholder="搜尋菜色類型...",
                                             ),
                                         ],
                                         className="field",
@@ -474,14 +483,15 @@ def build_layout():
                                     html.Div(
                                         [
                                             html.Label("營業狀態", htmlFor="d3-status"),
-                                            dcc.Dropdown(
-                                                id="d3-status",
+                                            app_dropdown(
+                                                "d3-status",
                                                 options=[
                                                     {"label": "營業中", "value": "營業中"},
                                                     {"label": "非營業中", "value": "非營業中"},
                                                 ],
                                                 placeholder="全部狀態",
                                                 clearable=True,
+                                                searchable=False,
                                             ),
                                         ],
                                         className="field",

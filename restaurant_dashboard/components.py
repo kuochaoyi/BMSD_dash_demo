@@ -1,7 +1,55 @@
 """共用摘要卡片、餐廳結果卡片與詳細資料欄位。"""
 
 import pandas as pd
-from dash import html
+from dash import dcc, html
+
+DROPDOWN_LABELS = {
+    "select_all": "全選",
+    "deselect_all": "取消全選",
+    "selected_count": "已選 {num_selected} 項",
+    "search": "輸入關鍵字篩選...",
+    "clear_search": "清除搜尋",
+    "clear_selection": "清除選取",
+    "no_options_found": "找不到符合的選項",
+}
+
+
+def app_dropdown(
+    element_id: str,
+    *,
+    options=None,
+    value=None,
+    placeholder: str = "請選擇",
+    multi: bool = False,
+    clearable: bool = True,
+    searchable: bool = True,
+    disabled: bool = False,
+    search_placeholder: str = "輸入關鍵字篩選...",
+    max_height: int = 320,
+    option_height: int = 40,
+) -> dcc.Dropdown:
+    """建立全站一致樣式與繁體中文介面文字的下拉選單。"""
+    mode_class = "app-dropdown-multi" if multi else "app-dropdown-single"
+    labels = {
+        **DROPDOWN_LABELS,
+        "search": search_placeholder,
+    }
+    return dcc.Dropdown(
+        id=element_id,
+        options=options if options is not None else [],
+        value=value,
+        placeholder=placeholder,
+        multi=multi,
+        clearable=clearable,
+        searchable=searchable,
+        disabled=disabled,
+        closeOnSelect=not multi,
+        maxHeight=max_height,
+        optionHeight=option_height,
+        labels=labels,
+        className=f"app-dropdown {mode_class}",
+    )
+
 
 def metric_card(label: str, element_id: str) -> html.Div:
     """建立首頁上方的摘要數字卡。"""

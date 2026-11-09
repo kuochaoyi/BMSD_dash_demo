@@ -10,6 +10,29 @@
   --primary: #1d4ed8;
   --primary-dark: #172554;
   --accent: #0f766e;
+  --control-height: 42px;
+  --control-radius: 8px;
+  --control-border: #cbd5e1;
+  --control-border-hover: #94a3b8;
+  --control-focus-ring: 0 0 0 3px rgb(29 78 216 / 15%);
+
+  /* 覆寫 Dash 4 預設紫色系變數，統一全站藍色與深灰調性 */
+  --Dash-Spacing: 4px;
+  --Dash-Stroke-Strong: #cbd5e1;
+  --Dash-Stroke-Weak: #e2e8f0;
+  --Dash-Fill-Interactive-Strong: var(--primary);
+  --Dash-Fill-Interactive-Weak: #eff6ff;
+  --Dash-Fill-Inverse-Strong: #ffffff;
+  --Dash-Text-Primary: var(--ink);
+  --Dash-Text-Strong: var(--ink);
+  --Dash-Text-Weak: var(--muted);
+  --Dash-Text-Disabled: #94a3b8;
+  --Dash-Fill-Primary-Hover: #f1f5f9;
+  --Dash-Fill-Primary-Active: #e2e8f0;
+  --Dash-Fill-Disabled: #f1f5f9;
+  --Dash-Shading-Strong: rgb(15 23 42 / 14%);
+  --Dash-Shading-Weak: rgb(15 23 42 / 8%);
+
   font-family: Inter, "Noto Sans TC", "Microsoft JhengHei", sans-serif;
   color: var(--ink);
   background: var(--canvas);
@@ -139,30 +162,49 @@ h1 {
 .field label {
   display: block;
   margin-bottom: 7px;
+  color: var(--ink);
   font-size: 0.88rem;
   font-weight: 750;
+  letter-spacing: 0.01em;
 }
 
 #keyword,
 .text-input {
   width: 100%;
-  height: 38px;
-  padding: 0 11px;
-  border: 1px solid #b8c5d6;
-  border-radius: 4px;
+  height: var(--control-height);
+  padding: 0 12px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--control-radius);
+  background: #ffffff;
+  color: var(--ink);
+  font-size: 0.94rem;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
   outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+
+#keyword::placeholder,
+.text-input::placeholder {
+  color: #94a3b8;
+}
+
+#keyword:hover,
+.text-input:hover {
+  border-color: var(--control-border-hover);
+  background: #fcfdff;
 }
 
 #keyword:focus,
 .text-input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgb(37 99 235 / 15%);
+  background: #ffffff;
+  box-shadow: var(--control-focus-ring);
 }
 
 .check-list {
   display: flex;
   flex-wrap: wrap;
-  min-height: 38px;
+  min-height: var(--control-height);
   gap: 8px 14px;
   align-items: center;
 }
@@ -174,17 +216,21 @@ h1 {
   margin: 0;
   font-weight: 500;
   white-space: nowrap;
+  cursor: pointer;
 }
 
 .reset-button,
 .pagination button {
-  min-height: 38px;
-  padding: 0 15px;
+  min-height: var(--control-height);
+  padding: 0 16px;
   border: 1px solid var(--primary-dark);
-  border-radius: 4px;
+  border-radius: var(--control-radius);
   color: var(--primary-dark);
   background: #fff;
+  font-size: 0.9rem;
+  font-weight: 650;
   cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .reset-button:hover,
@@ -564,11 +610,276 @@ h1 {
   overflow: visible;
 }
 
-/* Dash Dropdown 使用 React Select；提高選單層級並限制高度，讓內部可捲到底。 */
+/* 搜尋面板也可能展開縣市選單，因此建立相同的浮動層級。 */
+.filter-panel {
+  position: relative;
+  z-index: 30;
+  overflow: visible;
+}
+
+/* --------------------------------------------------------------------------
+   全站下拉選單（Dash 4 dcc.Dropdown）：統一高度、圓角、聚焦光暈、多選膠囊標籤與浮動選單
+   -------------------------------------------------------------------------- */
+.dash-dropdown-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.dash-dropdown {
+  width: 100%;
+  min-height: var(--control-height);
+  border: 1px solid var(--control-border) !important;
+  border-radius: var(--control-radius) !important;
+  background: #ffffff !important;
+  color: var(--ink) !important;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.dash-dropdown:not(:disabled):hover {
+  border-color: var(--control-border-hover) !important;
+  background: #fcfdff !important;
+}
+
+.dash-dropdown:focus,
+.dash-dropdown[aria-expanded="true"],
+.dash-dropdown[data-state="open"] {
+  border-color: var(--primary) !important;
+  outline: none !important;
+  background: #ffffff !important;
+  box-shadow: var(--control-focus-ring);
+}
+
+.dash-dropdown:disabled {
+  opacity: 1 !important;
+  border-color: #e2e8f0 !important;
+  background: #f8fafc !important;
+  color: #94a3b8 !important;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.dash-dropdown-trigger {
+  min-height: calc(var(--control-height) - 2px) !important;
+  padding: 5px 12px !important;
+  gap: 8px !important;
+}
+
+.dash-dropdown-value {
+  font-size: 0.94rem;
+  line-height: 1.4;
+}
+
+.dash-dropdown-placeholder {
+  color: #94a3b8 !important;
+  font-weight: 450;
+}
+
+/* 單選下拉選單：加強已選文字的清晰度 */
+.app-dropdown-single .dash-dropdown-value:not(.dash-dropdown-placeholder) {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* 多選下拉選單：以膠囊標籤（Pills）呈現已選項目，取代預設逗號分隔字串 */
+.app-dropdown-multi .dash-dropdown-value:not(.dash-dropdown-placeholder) {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+}
+
+.app-dropdown-multi .dash-dropdown-value-item::before {
+  content: none !important;
+}
+
+.app-dropdown-multi .dash-dropdown-value-item {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  max-width: 170px;
+  padding: 2px 10px;
+  border: 1px solid #bfdbfe;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1e40af;
+  font-size: 0.82rem;
+  font-weight: 650;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dash-dropdown-value-count {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px !important;
+  border-radius: 999px !important;
+  background: var(--primary) !important;
+  color: #ffffff !important;
+  font-size: 0.76rem !important;
+  font-weight: 700;
+  line-height: 1.4 !important;
+  letter-spacing: 0.02em;
+}
+
+.dash-dropdown-clear {
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 999px !important;
+  color: #64748b !important;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.dash-dropdown-clear:hover {
+  background: #fee2e2 !important;
+  color: #dc2626 !important;
+}
+
+.dash-dropdown-trigger-icon {
+  width: 16px;
+  height: 16px;
+  color: #64748b !important;
+  fill: currentColor !important;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s ease !important;
+}
+
+.dash-dropdown[aria-expanded="true"] .dash-dropdown-trigger-icon,
+[data-state="open"] .dash-dropdown-trigger-icon {
+  transform: rotate(180deg);
+  color: var(--primary) !important;
+}
+
+/* 展開後的浮動選單容器 */
+.dash-dropdown-content {
+  z-index: 1200 !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 10px !important;
+  background: #ffffff !important;
+  box-shadow:
+    0 16px 38px -8px rgb(15 23 42 / 16%),
+    0 6px 16px -4px rgb(15 23 42 / 8%) !important;
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+/* 選單內建搜尋框 */
+.dash-dropdown-search-container {
+  position: sticky;
+  top: 8px;
+  margin: 8px !important;
+  padding: 6px 10px !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 7px !important;
+  background: #f8fafc !important;
+  gap: 8px !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.dash-dropdown-search-container:focus-within {
+  border-color: var(--primary) !important;
+  outline: none !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgb(29 78 216 / 14%);
+}
+
+.dash-dropdown-search-icon {
+  color: #64748b;
+}
+
+.dash-dropdown-search {
+  font-size: 0.9rem !important;
+  line-height: 1.45 !important;
+  color: var(--ink) !important;
+}
+
+.dash-dropdown-search::placeholder {
+  color: #94a3b8;
+}
+
+/* 多選選單的「全選／取消全選」快捷列 */
+.dash-dropdown-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px !important;
+  padding: 6px 10px !important;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0 !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.dash-dropdown-action-button {
+  padding: 4px 10px !important;
+  border: 1px solid #dbe3ee !important;
+  border-radius: 6px;
+  background: #ffffff !important;
+  color: var(--primary) !important;
+  font-size: 0.8rem !important;
+  font-weight: 700 !important;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.dash-dropdown-action-button:hover {
+  border-color: var(--primary) !important;
+  background: var(--primary) !important;
+  color: #ffffff !important;
+}
+
+/* 選項清單與單一選項列 */
+.dash-dropdown-options {
+  padding: 4px;
+  overscroll-behavior: contain;
+}
+
+.dash-dropdown-option {
+  padding: 8px 12px !important;
+  border-radius: 6px;
+  box-shadow: none !important;
+  font-size: 0.92rem;
+  line-height: 1.4;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.dash-options-list-option:not(:has(input[disabled])):hover,
+.dash-options-list-option:not(:has(input[disabled])):focus-within {
+  background: #f1f5f9 !important;
+  color: var(--primary-dark) !important;
+}
+
+.dash-options-list-option:has(input:checked) {
+  background: #eff6ff !important;
+  color: var(--primary) !important;
+  font-weight: 650;
+}
+
+.dash-options-list-option:has(input[type="radio"]:checked)::after {
+  content: "✓";
+  margin-left: auto;
+  padding-left: 10px;
+  color: var(--primary);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.dash-options-list-option-checkbox {
+  width: 16px;
+  height: 16px;
+  margin: 0 10px 0 0 !important;
+  border-radius: 4px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+/* 向下相容舊版 React Select 選擇器 */
 .explorer-toolbar .Select-menu-outer,
 .planner-toolbar .Select-menu-outer,
 .filter-panel .Select-menu-outer {
-  z-index: 1000 !important;
+  z-index: 1200 !important;
   max-height: 320px !important;
   overflow: hidden;
 }
@@ -579,13 +890,6 @@ h1 {
   max-height: 318px !important;
   overflow-y: auto !important;
   overscroll-behavior: contain;
-}
-
-/* 搜尋面板也可能展開縣市選單，因此建立相同的浮動層級。 */
-.filter-panel {
-  position: relative;
-  z-index: 30;
-  overflow: visible;
 }
 
 .planner-controls {
