@@ -4,6 +4,7 @@ from dash import dcc, html
 
 from .components import metric_card
 from .data import CITY_OPTIONS, CUISINE_OPTIONS, DATA_UPDATE_TIME, PLANNER_DEFAULT_CITY
+from .time_utils import format_update_time
 
 
 def build_layout():
@@ -20,7 +21,10 @@ def build_layout():
                         ]
                     ),
                     html.Div(
-                        [html.Span("資料更新時間"), html.Strong(DATA_UPDATE_TIME)],
+                        [
+                            html.Span("資料更新時間"),
+                            html.Strong(format_update_time(DATA_UPDATE_TIME)),
+                        ],
                         className="data-time",
                     ),
                 ],
