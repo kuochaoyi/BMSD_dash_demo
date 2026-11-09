@@ -22,8 +22,6 @@ def update_page(
     current_page: int,
 ):
     """篩選異動時回到第一頁；只有翻頁按鈕會增減頁碼。"""
-    from dash import ctx
-
     if ctx.triggered_id == "next-page":
         return max(1, (current_page or 1) + 1)
     if ctx.triggered_id == "previous-page":

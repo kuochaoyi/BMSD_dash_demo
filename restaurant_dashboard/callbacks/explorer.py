@@ -1,6 +1,7 @@
 """店家探索篩選與詳細資料更新。"""
 
-from dash import Input, Output, State, html
+from dash import Input, Output, State, ctx, html
+from dash.exceptions import MissingCallbackContextException
 
 import plotly.express as px
 
@@ -49,9 +50,13 @@ def update_explorer_restaurants(
         for _, row in filtered.sort_values(["town", "name"], kind="stable").iterrows()
     ]
 
-    # 從規劃頁跳轉時優先選取指定店家；一般切換縣市則盡量保留目前店家。
+    # 從規劃頁跳轉時優先選取指定店家；一般調整搜尋條件則優先保留目前選取的店家。
     valid_ids = {option["value"] for option in options}
-    requested_id = (navigation_data or {}).get("restaurant_id")
+    try:
+        is_navigation_trigger = "navigate-restaurant-store.data" in ctx.triggered_prop_ids
+    except MissingCallbackContextException:
+        is_navigation_trigger = bool(navigation_data)
+    requested_id = (navigation_data or {}).get("restaurant_id") if is_navigation_trigger else None
     if requested_id in valid_ids:
         selected_id = requested_id
     elif current_id in valid_ids:
