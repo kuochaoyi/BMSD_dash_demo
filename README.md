@@ -8,6 +8,7 @@
 - 店名／地址／簡介關鍵字、縣市、營業狀態與資料完整度的複合搜尋
 - 可切換的「店家探索」分頁，可依縣市、店名／簡介關鍵字與多選菜色類型搜尋；初始不載入資料，搜尋後才顯示店家基本資料、社群帳號與聚焦地圖，沒有符合店家時會顯示提醒
 - 可切換的「餐廳規劃」分頁；進入分頁並選定縣市後，可用雙頭時間 RangeSlider 與多選菜色類型尋找餐廳，完整展開符合店家，並可從卡片按鈕跳至店家探索詳細資料
+- 可切換的「D3 視覺化分析」分頁；使用 D3.js v7 呈現互動式「縣市餐廳數量排行榜」與「菜色類型比例」環形圖＋完整分類排行明細，支援點擊長條或扇區雙向交叉篩選（Cross-Filtering）、Top 10／全部縣市切換、依數量／依營業率排序與動態浮動提示框
 ## 啟動方式
 
 ```powershell
@@ -33,9 +34,12 @@ python app.py
 | `restaurant_dashboard/time_utils.py` | 解析營業時間文字、比對用餐時段（含跨午夜營業）、格式化時間標籤。 |
 | `restaurant_dashboard/figures.py` | 產生縣市排行榜、餐廳分布地圖、單店地圖及菜色分類圓餅圖。 |
 | `restaurant_dashboard/components.py` | 可重用的摘要卡片、餐廳結果卡片及店家詳細資料欄位。 |
-| `restaurant_dashboard/layout.py` | `build_layout()` 建立三個分頁的畫面、搜尋控制項、圖表容器與狀態儲存元件。 |
+| `restaurant_dashboard/layout.py` | `build_layout()` 建立四個分頁的畫面、搜尋控制項、圖表容器與狀態儲存元件。 |
 | `restaurant_dashboard/callbacks/__init__.py` | 統一註冊所有功能的 Dash 回呼。 |
 | `restaurant_dashboard/callbacks/overview.py` | 資料總覽的複合搜尋、重設條件、翻頁、摘要數字及圖表更新。 |
 | `restaurant_dashboard/callbacks/explorer.py` | 店家探索的篩選選項、店家詳細資料、社群連結及單店地圖更新。 |
 | `restaurant_dashboard/callbacks/planner.py` | 依縣市、用餐時間及菜色條件規劃餐廳，產生摘要、地圖與全部結果卡片。 |
+| `restaurant_dashboard/callbacks/d3_view.py` | D3 視覺化分析分頁的資料聚合、交叉篩選狀態計算與 Clientside Callback 註冊。 |
 | `restaurant_dashboard/callbacks/navigation.py` | 切換分頁顯示狀態，以及從規劃結果跳至指定店家的詳細資料。 |
+| `assets/01_d3.v7.min.js` | 本地內建 D3.js v7 視覺化函式庫。 |
+| `assets/02_d3_charts.js` | D3.js 互動式「縣市餐廳數量排行榜」與「菜色類型比例」渲染、平滑過渡動畫與雙向點擊篩選邏輯。 |

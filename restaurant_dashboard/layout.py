@@ -41,6 +41,7 @@ def build_layout():
                             dcc.Tab(label="資料總覽", value="overview"),
                             dcc.Tab(label="店家探索", value="explorer"),
                             dcc.Tab(label="餐廳規劃", value="planner"),
+                            dcc.Tab(label="D3 視覺化分析", value="d3-analytics"),
                         ],
                         className="view-tabs",
                     ),
@@ -422,6 +423,212 @@ def build_layout():
                             ),
                         ],
                         id="planner-tab-content",
+                        style={"display": "none"},
+                    ),
+                    html.Div(
+                        [
+                            dcc.Store(id="d3-data-store"),
+                            dcc.Store(id="d3-render-status"),
+                            html.Section(
+                                [
+                                    html.Div(
+                                        [
+                                            html.Label("關鍵字搜尋", htmlFor="d3-keyword"),
+                                            dcc.Input(
+                                                id="d3-keyword",
+                                                type="search",
+                                                placeholder="搜尋店名、地址或餐廳簡介",
+                                                debounce=True,
+                                                className="text-input",
+                                            ),
+                                        ],
+                                        className="field",
+                                    ),
+                                    html.Div(
+                                        [
+                                            html.Label("鎖定縣市（或點擊左側長條）", htmlFor="d3-city-filter"),
+                                            dcc.Dropdown(
+                                                id="d3-city-filter",
+                                                options=[
+                                                    {"label": city, "value": city}
+                                                    for city in CITY_OPTIONS
+                                                ],
+                                                placeholder="全部縣市",
+                                                clearable=True,
+                                            ),
+                                        ],
+                                        className="field",
+                                    ),
+                                    html.Div(
+                                        [
+                                            html.Label("鎖定菜色（或點擊右側圓餅）", htmlFor="d3-cuisine-filter"),
+                                            dcc.Dropdown(
+                                                id="d3-cuisine-filter",
+                                                options=CUISINE_OPTIONS,
+                                                placeholder="全部菜色類型",
+                                                clearable=True,
+                                            ),
+                                        ],
+                                        className="field",
+                                    ),
+                                    html.Div(
+                                        [
+                                            html.Label("營業狀態", htmlFor="d3-status"),
+                                            dcc.Dropdown(
+                                                id="d3-status",
+                                                options=[
+                                                    {"label": "營業中", "value": "營業中"},
+                                                    {"label": "非營業中", "value": "非營業中"},
+                                                ],
+                                                placeholder="全部狀態",
+                                                clearable=True,
+                                            ),
+                                        ],
+                                        className="field",
+                                    ),
+                                    html.Div(
+                                        [
+                                            html.Label("資料完整度"),
+                                            dcc.Checklist(
+                                                id="d3-extras",
+                                                options=[
+                                                    {"label": "有營業時間", "value": "has_hours"},
+                                                    {"label": "有官方網站", "value": "has_website"},
+                                                ],
+                                                value=[],
+                                                className="check-list",
+                                            ),
+                                        ],
+                                        className="field extras-field",
+                                    ),
+                                    html.Button(
+                                        "重設全部條件",
+                                        id="d3-reset",
+                                        n_clicks=0,
+                                        className="reset-button",
+                                    ),
+                                ],
+                                className="filter-panel d3-filter-panel",
+                                **{"aria-label": "D3 視覺化篩選條件"},
+                            ),
+                            html.Div(
+                                id="d3-active-badges",
+                                className="d3-active-bar",
+                            ),
+                            html.Section(
+                                [
+                                    metric_card("符合餐廳總數", "d3-metric-count"),
+                                    metric_card("涵蓋縣市數", "d3-metric-cities"),
+                                    metric_card("營業中比例", "d3-metric-open"),
+                                    metric_card("最大宗菜色", "d3-metric-top-cuisine"),
+                                ],
+                                className="metric-grid d3-metric-grid",
+                                **{"aria-label": "D3 視覺化統計摘要"},
+                            ),
+                            html.Section(
+                                [
+                                    html.Article(
+                                        [
+                                            html.Div(
+                                                [
+                                                    html.Div(
+                                                        [
+                                                            html.Span("D3.JS INTERACTIVE RANKING", className="d3-panel-tag"),
+                                                            html.H2("縣市餐廳數量排行榜"),
+                                                            html.P(id="d3-ranking-subtitle"),
+                                                        ]
+                                                    ),
+                                                    html.Div(
+                                                        [
+                                                            dcc.RadioItems(
+                                                                id="d3-ranking-mode",
+                                                                options=[
+                                                                    {"label": "全部縣市", "value": "all"},
+                                                                    {"label": "Top 10", "value": "top10"},
+                                                                ],
+                                                                value="all",
+                                                                className="d3-segmented-control",
+                                                                 inline=True,
+                                                            ),
+                                                            dcc.RadioItems(
+                                                                id="d3-ranking-sort",
+                                                                options=[
+                                                                    {"label": "依數量", "value": "count"},
+                                                                    {"label": "依營業率", "value": "open_rate"},
+                                                                ],
+                                                                value="count",
+                                                                className="d3-segmented-control",
+                                                                inline=True,
+                                                            ),
+                                                        ],
+                                                        className="d3-chart-controls",
+                                                    ),
+                                                ],
+                                                className="section-heading d3-section-heading",
+                                            ),
+                                            html.Div(
+                                                id="d3-ranking-chart",
+                                                className="d3-chart-canvas d3-ranking-canvas",
+                                            ),
+                                        ],
+                                        className="panel d3-panel",
+                                    ),
+                                    html.Article(
+                                        [
+                                            html.Div(
+                                                [
+                                                    html.Div(
+                                                        [
+                                                            html.Span("D3.JS DONUT & BREAKDOWN", className="d3-panel-tag"),
+                                                            html.H2("菜色類型比例"),
+                                                            html.P(id="d3-cuisine-subtitle"),
+                                                        ]
+                                                    ),
+                                                ],
+                                                className="section-heading d3-section-heading",
+                                            ),
+                                            html.Div(
+                                                [
+                                                    html.Div(
+                                                        [
+                                                            html.Div(
+                                                                id="d3-cuisine-chart",
+                                                                className="d3-donut-canvas",
+                                                            ),
+                                                            html.P(
+                                                                "滑過扇區檢視占比，點擊扇區或右側排行項目可雙向篩選左側縣市",
+                                                                className="d3-donut-caption",
+                                                            ),
+                                                        ],
+                                                        className="d3-donut-column",
+                                                    ),
+                                                    html.Div(
+                                                        [
+                                                            html.Div(
+                                                                [
+                                                                    html.Span("完整菜色分類排行"),
+                                                                    html.Span("點擊項目可鎖定篩選", className="d3-legend-hint"),
+                                                                ],
+                                                                className="d3-legend-header",
+                                                            ),
+                                                            html.Div(
+                                                                id="d3-cuisine-legend",
+                                                                className="d3-cuisine-legend",
+                                                            ),
+                                                        ],
+                                                        className="d3-legend-column",
+                                                    ),
+                                                ],
+                                                className="d3-cuisine-split",
+                                            ),
+                                        ],
+                                        className="panel d3-panel",
+                                    ),
+                                ],
+                                className="d3-visual-grid",
+                            ),
+                        ],
+                        id="d3-tab-content",
                         style={"display": "none"},
                     ),
                 ]

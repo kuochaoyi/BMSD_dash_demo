@@ -5,12 +5,34 @@ from dash import ALL, Input, Output, ctx, no_update
 from ..data import RESTAURANTS
 
 def switch_view(active_tab: str):
-    """依目前選取的分頁顯示資料總覽、店家探索或餐廳規劃。"""
+    """依目前選取的分頁顯示資料總覽、店家探索、餐廳規劃或 D3 視覺化分析。"""
     if active_tab == "explorer":
-        return {"display": "none"}, {"display": "block"}, {"display": "none"}
+        return (
+            {"display": "none"},
+            {"display": "block"},
+            {"display": "none"},
+            {"display": "none"},
+        )
     if active_tab == "planner":
-        return {"display": "none"}, {"display": "none"}, {"display": "block"}
-    return {"display": "block"}, {"display": "none"}, {"display": "none"}
+        return (
+            {"display": "none"},
+            {"display": "none"},
+            {"display": "block"},
+            {"display": "none"},
+        )
+    if active_tab == "d3-analytics":
+        return (
+            {"display": "none"},
+            {"display": "none"},
+            {"display": "none"},
+            {"display": "block"},
+        )
+    return (
+        {"display": "block"},
+        {"display": "none"},
+        {"display": "none"},
+        {"display": "none"},
+    )
 
 
 def navigate_to_restaurant_detail(click_counts: list[int]):
@@ -41,6 +63,7 @@ def register_callbacks(app):
         Output("overview-tab-content", "style"),
         Output("explorer-tab-content", "style"),
         Output("planner-tab-content", "style"),
+        Output("d3-tab-content", "style"),
         Input("view-tabs", "value"),
     )(switch_view)
     app.callback(

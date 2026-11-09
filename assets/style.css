@@ -694,16 +694,439 @@ footer {
 }
 
 /* --------------------------------------------------------------------------
+   D3 視覺化分析分頁：雙向交叉篩選、水平長條圖與環形比例明細。
+   -------------------------------------------------------------------------- */
+.d3-filter-panel {
+  grid-template-columns: minmax(210px, 1.25fr) minmax(160px, 0.9fr) minmax(190px, 1.05fr) minmax(140px, 0.75fr) minmax(195px, 0.95fr) auto;
+  border-top-color: var(--accent);
+}
+
+.d3-active-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 11px 16px;
+  border: 1px solid #cbd5e1;
+  border-left: 4px solid var(--accent);
+  background: #f8fafc;
+}
+
+.d3-Crossfilter-tip {
+  color: #334155;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.d3-filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border: 1px solid #bfdbfe;
+  border-radius: 999px;
+  color: var(--primary-dark);
+  background: #eff6ff;
+  font-size: 0.84rem;
+}
+
+.d3-pill-city,
+.d3-pill-cuisine {
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.d3-pill-city::after,
+.d3-pill-cuisine::after {
+  content: "✕";
+  margin-left: 4px;
+  font-size: 0.74rem;
+  opacity: 0.7;
+}
+
+.d3-pill-city:hover,
+.d3-pill-cuisine:hover {
+  background: #dbeafe;
+  transform: translateY(-1px);
+}
+
+.d3-pill-prefix {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.d3-metric-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+#d3-metric-top-cuisine {
+  font-size: clamp(1.05rem, 1.7vw, 1.38rem);
+  text-align: right;
+}
+
+.d3-visual-grid {
+  display: grid;
+  grid-template-columns: minmax(440px, 1fr) minmax(520px, 1.15fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.d3-panel {
+  border-top: 3px solid var(--primary);
+}
+
+.d3-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.d3-panel-tag {
+  display: inline-block;
+  margin-bottom: 4px;
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.d3-chart-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.d3-segmented-control {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #f1f5f9;
+}
+
+.d3-segmented-control label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  color: #475569;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.d3-segmented-control label:has(input:checked) {
+  color: var(--primary-dark);
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgb(15 23 42 / 10%);
+}
+
+.d3-segmented-control input[type="radio"] {
+  margin: 0;
+  accent-color: var(--primary);
+}
+
+.d3-chart-canvas {
+  padding: 14px 16px 18px;
+}
+
+.d3-ranking-canvas {
+  max-height: 760px;
+  overflow-y: auto;
+}
+
+.d3-cuisine-split {
+  display: grid;
+  grid-template-columns: minmax(270px, 0.95fr) minmax(250px, 1.05fr);
+  gap: 18px;
+  align-items: center;
+  padding: 18px 20px 22px;
+}
+
+.d3-donut-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.d3-donut-canvas {
+  width: 100%;
+  min-height: 310px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.d3-donut-caption {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.d3-legend-column {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  background: #f8fafc;
+}
+
+.d3-legend-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  background: #ffffff;
+  font-size: 0.84rem;
+  font-weight: 750;
+}
+
+.d3-legend-hint {
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.d3-cuisine-legend {
+  max-height: 460px;
+  overflow-y: auto;
+  padding: 8px;
+  display: grid;
+  gap: 6px;
+}
+
+.d3-legend-item {
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.12s ease;
+}
+
+.d3-legend-item:hover,
+.d3-legend-item.is-hovered {
+  border-color: #93c5fd;
+  background: #eff6ff;
+  transform: translateX(2px);
+}
+
+.d3-legend-item.is-selected {
+  border-color: var(--accent);
+  border-left-width: 4px;
+  background: #f0fdfa;
+}
+
+.d3-legend-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.d3-legend-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.d3-legend-swatch {
+  flex: 0 0 10px;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.d3-legend-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.d3-legend-stats {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.d3-legend-count {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.d3-legend-share {
+  color: var(--primary-dark);
+  font-size: 0.84rem;
+  min-width: 42px;
+  text-align: right;
+}
+
+.d3-legend-bar-track {
+  width: 100%;
+  height: 5px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+
+.d3-legend-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.d3-empty-state {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--muted);
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+}
+
+.d3-empty-state strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--ink);
+  font-size: 1.05rem;
+}
+
+.d3-empty-state p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* D3 全域浮動卡片式 Tooltip */
+.d3-tooltip {
+  position: fixed;
+  z-index: 9999;
+  width: 280px;
+  padding: 13px 15px;
+  border: 1px solid #cbd5e1;
+  border-top: 3px solid var(--primary);
+  border-radius: 8px;
+  color: var(--ink);
+  background: rgb(255 255 255 / 97%);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 16px 36px rgb(15 23 42 / 16%);
+  font-size: 0.84rem;
+  transition: opacity 0.12s ease;
+}
+
+.d3-tip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.d3-tip-header strong {
+  font-size: 1rem;
+  color: var(--primary-dark);
+}
+
+.d3-tip-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: #0f766e;
+  background: #ccfbf1;
+  font-size: 0.74rem;
+  font-weight: 750;
+}
+
+.d3-tip-Metrics {
+  display: grid;
+  gap: 4px;
+  margin: 9px 0;
+}
+
+.d3-tip-Metrics > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.d3-tip-Metrics span {
+  color: var(--muted);
+}
+
+.d3-tip-section {
+  padding-top: 8px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.d3-tip-subtitle {
+  margin-bottom: 5px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.d3-tip-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.d3-tip-tag {
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: #f1f5f9;
+  color: #334155;
+  font-size: 0.76rem;
+}
+
+.d3-tip-tag b {
+  color: var(--primary);
+}
+
+.d3-tip-muted {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.d3-tip-footer {
+  margin-top: 9px;
+  padding-top: 7px;
+  border-top: 1px dashed #e2e8f0;
+  color: var(--primary);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
    響應式規則：平板改成單欄圖表，手機再縮減卡片欄數與留白。
    -------------------------------------------------------------------------- */
 @media (max-width: 1180px) {
-  .filter-panel {
+  .filter-panel,
+  .d3-filter-panel {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .d3-metric-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .visual-grid,
   .explorer-grid,
-  .planner-output-grid {
+  .planner-output-grid,
+  .d3-visual-grid {
     grid-template-columns: 1fr;
   }
 
@@ -736,7 +1159,8 @@ footer {
   }
 
   .page-header,
-  .result-heading {
+  .result-heading,
+  .d3-section-heading {
     align-items: stretch;
     flex-direction: column;
   }
@@ -746,11 +1170,14 @@ footer {
   }
 
   .filter-panel,
+  .d3-filter-panel,
   .metric-grid,
+  .d3-metric-grid,
   .result-list,
   .detail-fields,
   .explorer-picker,
-  .planner-controls {
+  .planner-controls,
+  .d3-cuisine-split {
     grid-template-columns: 1fr;
   }
 
@@ -779,3 +1206,4 @@ footer {
     justify-content: space-between;
   }
 }
+
