@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 import pandas as pd
 
 from .config import DATA_FILE, SERVICE_TIME_FILE, CUISINE_LABELS
-from .time_utils import parse_time_ranges
+from .time_utils import format_update_time, parse_time_ranges
 
 def first_value(items: Any, key: str) -> str:
     """安全地取得物件陣列中第一筆指定欄位，缺值時回傳空字串。"""
@@ -128,7 +128,7 @@ def load_restaurants() -> tuple[pd.DataFrame, str]:
         .agg(" ".join, axis=1)
         .str.lower()
     )
-    update_time = str(payload.get("UpdateTime", "未知"))
+    update_time = format_update_time(payload.get("UpdateTime"))
     return frame, update_time
 
 

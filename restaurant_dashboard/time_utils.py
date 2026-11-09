@@ -1,5 +1,6 @@
 """營業時間解析、用餐時段比對與時間文字格式化。"""
 
+from datetime import datetime
 import re
 
 def parse_time_ranges(service_time: str) -> list[tuple[float, float]]:
@@ -56,3 +57,20 @@ def format_time_range(values: list[float]) -> str:
     """將 RangeSlider 的兩個數值轉成可閱讀的用餐時間範圍。"""
     start, end = values
     return f"{format_time(start)}–{format_time(end)}"
+
+
+def format_update_time(raw_time: str | None) -> str:
+    """將資料集更新時間格式化為 YYYY-MM-DD HH:MM。"""
+    if not raw_time:
+        return "未知"
+    text = str(raw_time).strip()
+    if not text:
+        return "未知"
+    try:
+        return datetime.fromisoformat(text).strftime("%Y-%m-%d %H:%M")
+    except ValueError:
+        match = re.search(r"(\d{4}-\d{2}-\d{2})[T\s](\d{2}:\d{2})", text)
+        if match:
+            return f"{match.group(1)} {match.group(2)}"
+        return text
+
