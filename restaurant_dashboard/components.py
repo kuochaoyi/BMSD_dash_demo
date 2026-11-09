@@ -26,7 +26,6 @@ def app_dropdown(
     disabled: bool = False,
     search_placeholder: str = "輸入關鍵字篩選...",
     max_height: int = 320,
-    option_height: int = 40,
 ) -> dcc.Dropdown:
     """建立全站一致樣式與繁體中文介面文字的下拉選單。"""
     mode_class = "app-dropdown-multi" if multi else "app-dropdown-single"
@@ -45,7 +44,6 @@ def app_dropdown(
         disabled=disabled,
         closeOnSelect=not multi,
         maxHeight=max_height,
-        optionHeight=option_height,
         labels=labels,
         className=f"app-dropdown {mode_class}",
     )

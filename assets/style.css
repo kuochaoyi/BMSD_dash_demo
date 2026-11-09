@@ -758,20 +758,25 @@ h1 {
 /* 展開後的浮動選單容器 */
 .dash-dropdown-content {
   z-index: 1200 !important;
+  display: flex;
+  flex-direction: column;
   border: 1px solid #cbd5e1 !important;
   border-radius: 10px !important;
   background: #ffffff !important;
   box-shadow:
     0 16px 38px -8px rgb(15 23 42 / 16%),
     0 6px 16px -4px rgb(15 23 42 / 8%) !important;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   overscroll-behavior: contain;
 }
 
 /* 選單內建搜尋框 */
 .dash-dropdown-search-container {
+  flex-shrink: 0;
   position: sticky;
-  top: 8px;
+  top: 0;
+  z-index: 2;
   margin: 8px !important;
   padding: 6px 10px !important;
   border: 1px solid #cbd5e1 !important;
@@ -804,6 +809,7 @@ h1 {
 
 /* 多選選單的「全選／取消全選」快捷列 */
 .dash-dropdown-actions {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 8px !important;
@@ -832,8 +838,18 @@ h1 {
 
 /* 選項清單與單一選項列 */
 .dash-dropdown-options {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 250px;
+  overflow-y: auto !important;
   padding: 4px;
   overscroll-behavior: contain;
+}
+
+.dash-dropdown-options:has(.dash-options-list-virtualized) {
+  max-height: none;
+  overflow-y: visible !important;
+  padding: 0;
 }
 
 .dash-dropdown-option {
